@@ -48,6 +48,3 @@ target_link_libraries(videna PRIVATE avcodec avformat avutil swscale) #OpenMP::O
 add_dependencies(videna FFmpeg)
 
 install(TARGETS videna RUNTIME DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}")
-#target_include_directories(navv PRIVATE ${AVCODEC_INCLUDE_DIR} ${AVFORMAT_INCLUDE_DIR} ${AVUTIL_INCLUDE_DIR} ${AVUTILTIME_INCLUDE_DIR} ${AVUTILIMGUTILS_INCLUDE_DIR} ${AVUTILFRAME_INCLUDE_DIR} ${SWSCALE_INCLUDE_DIR})
-#target_link_libraries(navv PRIVATE ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${AVUTIL_LIBRARY} ${SWSCALE_LIBRARY} OpenMP::OpenMP_C)
-#add_dependencies(vnav ${AVCODEC_LIBRARY})
