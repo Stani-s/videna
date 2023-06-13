@@ -43,7 +43,7 @@ find_library(SWSCALE_LIBRARY swscale)
 
 target_include_directories(videna PRIVATE avcodec avformat avutil imgutils)
 
-target_link_libraries(videna PRIVATE avcodec avformat avutil swscale) #OpenMP::OpenMP_C)
+target_link_libraries(videna PRIVATE avcodec avformat avutil swscale)
 
 add_dependencies(videna FFmpeg)
 
