@@ -128,6 +128,7 @@ void _decode(List survivalPack) async {
   FrameNative? nativeFrame;
   Pointer<Void> videoState = Pointer<Void>.fromAddress(survivalPack[0]);
   MediaMetadata m = survivalPack[1];
+  int startOnPause = survivalPack[4] ? 1 : 0;
   ReceivePort controlPort = ReceivePort()
     ..listen((message) {
       switch (message[0]) {
@@ -160,6 +161,7 @@ void _decode(List survivalPack) async {
           if (nativeFrame != null && nativeFrame!.progress > message[1]) {
             backwards = 1;
           }
+
           seekTime(videoState, message[1], backwards);
           break;
         case 'seekPrecise':
@@ -218,13 +220,15 @@ void _decode(List survivalPack) async {
   connections.setupPort.send([controlPort.sendPort]);
   while (!quit) {
     if (!paused) {
-      if (quit) {
-        break;
-      }
-
       pts = makeFrame(videoState);
 
       if (pts >= 0) {
+        if (startOnPause > 1) {
+          startOnPause--;
+        } else if (startOnPause == 1) {
+          startOnPause--;
+          paused = true;
+        }
         nativeFrame = _sendFrame(videoState, m, connections.imagePort!, speed);
         if (nativeFrame == null) {
           quit = true;
@@ -260,6 +264,7 @@ void _decode(List survivalPack) async {
               completer.complete();
               break;
             }
+            pts = nativeFrame!.pts;
           } catch (e) {
             // Everything is fine, but eof has been reached
           }
@@ -429,7 +434,8 @@ class VidenaPlayer {
       ImageFormat imageFormat = ImageFormat.rgba,
       ProcessStrategy processStrategy = ProcessStrategy.image,
       Future<Frame> Function(Frame)? postProcess,
-      double speed = 1}) async {
+      double speed = 1,
+      bool startOnPause = false}) async {
     if (speed <= 0) {
       throw Exception("Illegal speed value");
     }
@@ -460,7 +466,8 @@ class VidenaPlayer {
           metadata,
           _Connections.fromAll(_setupPort!.sendPort, _imageStream!.sendPort,
               _imageMetadataStream!.sendPort, _progressStream!.sendPort),
-          speed
+          speed,
+          startOnPause
         ],
         errorsAreFatal: false);
     Completer terminator = Completer();

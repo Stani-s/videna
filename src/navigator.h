@@ -29,7 +29,7 @@
 #include <math.h>
 #ifdef _WIN32
 #include <windows.h>
-#elif __unix__
+#else
 #include <pthread.h>
 #endif
 

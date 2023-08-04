@@ -177,7 +177,7 @@ void initializeDecoder() {
   if (Platform.isWindows) {
     dynLib = DynamicLibrary.open(
         path.join(path.dirname(Platform.resolvedExecutable), 'libvidena.dll'));
-  } else if (Platform.isLinux) {
+  } else if (Platform.isLinux || Platform.isAndroid) {
     dynLib = DynamicLibrary.open('libvidena.so');
   }
   seekTime = dynLib.lookupFunction<SeekTimeNative, SeekTime>('seek_time');
@@ -203,7 +203,7 @@ void initializeAPI() {
   if (Platform.isWindows) {
     dynLib = DynamicLibrary.open(
         path.join(path.dirname(Platform.resolvedExecutable), 'libvidena.dll'));
-  } else if (Platform.isLinux) {
+  } else if (Platform.isLinux || Platform.isAndroid) {
     dynLib = DynamicLibrary.open('libvidena.so');
   }
   openVideo = dynLib.lookupFunction<OpenVideoNative, OpenVideo>('openVideo');

@@ -1,0 +1,13 @@
+task cmeike(type:Exec) {
+    exec {
+            commandLine 'cmake','-S', './download', '-B', './build','-Wno-dev' // this would be the build folder
+            //commandLine 'cmake', '--build', 'build'
+            //commandLine 'cmake', '--install', 'build' // ?
+        }
+        exec {
+            commandLine 'cmake', '--build', 'build', '--clean-first'
+        }
+        exec {
+            commandLine 'cmake', '--install', 'build'
+        }
+}

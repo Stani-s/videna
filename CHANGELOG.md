@@ -1,3 +1,7 @@
-## 0.0.1
+## 0.1.1
 
-Windows Release
+### Android Support
+
+## Fixes:
+- Seeking with nFramesBackward now works correctly
+- VidenaPlayer.open() and Video.open() have an option to load first frame and pause
