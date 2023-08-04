@@ -1,6 +1,6 @@
 name: videna
 description: A video decoding and playback library for Flutter.
-version: 0.0.1
+version: 0.1.1
 homepage: https://github.com/Stani-s/videna
 repository: https://github.com/Stani-s/videna
 
@@ -56,4 +56,6 @@ flutter:
       windows:
         ffiPlugin: true
       linux:
+        ffiPlugin: true
+      android:
         ffiPlugin: true

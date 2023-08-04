@@ -38,7 +38,7 @@ static int unlock(HANDLE* mutex) {
 static void destroy_lock(HANDLE* mutex) {
     CloseHandle(*mutex);
 }
-#elif __unix__
+#else
 static void init_lock(pthread_mutex_t* mutex) {
     pthread_mutex_init(mutex, NULL);
 }

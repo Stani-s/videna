@@ -76,8 +76,8 @@ class Video extends StatefulWidget {
 
   Video({super.key});
 
-  Future<void> open(String file) async {
-    await player.open(file: file);
+  Future<void> open(String file, {bool startOnPause = false}) async {
+    await player.open(file: file, startOnPause: startOnPause);
   }
 
   void pause() {

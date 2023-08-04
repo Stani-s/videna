@@ -1,37 +1,12 @@
-// This file is a part of videna.
-// Copyright () 2023 Stanisław Talejko <stalejko@gmail.com>
-//
-// videna is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 3 of the License, or (at your option) any later version.
-//
-// videna is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, write to the Free Software Foundation,
-// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 import 'package:flutter/services.dart';
 import 'package:videna/video.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
   Videna.initialize();
-  windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setTitle("Videna Example");
-    await windowManager.setTitleBarStyle(TitleBarStyle.normal);
-    await windowManager.setBackgroundColor(Colors.white);
-    await windowManager.show();
-    await windowManager.setSkipTaskbar(false);
-  });
   runApp(const MyApp());
 }
 
@@ -56,7 +31,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => HomePageState();
 }
 
-class HomePageState extends State<HomePage> with WindowListener {
+class HomePageState extends State<HomePage> {
   int index = 0;
 
   Uint8List? snapshotArray;
@@ -72,19 +47,16 @@ class HomePageState extends State<HomePage> with WindowListener {
   @override
   void initState() {
     progressBar = video.getProgressBar();
-    windowManager.addListener(this);
     _init();
     super.initState();
   }
 
   void _init() async {
-    await windowManager.setPreventClose(true);
     setState(() {});
   }
 
   @override
   void dispose() {
-    windowManager.removeListener(this);
     super.dispose();
   }
 
@@ -133,48 +105,77 @@ class HomePageState extends State<HomePage> with WindowListener {
                           child: FractionallySizedBox(
                               heightFactor: 0.635, child: video)),
                       Table(children: [
-                        TableRow(children: [Row(), progressBar, Row()]),
+                        TableRow(
+                            children: [const Row(), progressBar, const Row()]),
                         TableRow(children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              OutlinedButton(
-                                  onPressed: () => {video.nFramesBackward(10)},
-                                  child: const Text('-10')),
-                              OutlinedButton(
-                                  onPressed: () => {video.nFramesBackward(3)},
-                                  child: const Text('-3')),
-                              OutlinedButton(
-                                  onPressed: () => {video.nFramesBackward(1)},
-                                  child: const Text('-1'))
-                            ],
-                          ),
+                          backwardButtons(video),
                           OutlinedButton(
                               onPressed: () => {video.togglePause()},
                               child: const Icon(Icons.play_arrow)),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                OutlinedButton(
-                                    onPressed: () => {video.nFramesForward(1)},
-                                    child: const Text('1+')),
-                                OutlinedButton(
-                                    onPressed: () => {video.nFramesForward(3)},
-                                    child: const Text('3+')),
-                                OutlinedButton(
-                                    onPressed: () => {video.nFramesForward(10)},
-                                    child: const Text('10+')),
-                              ])
+                          forwardButtons(video)
                         ]),
                       ])
                     ]))));
   }
+}
 
-  @override
-  void onWindowClose() async {
-    await video.dispose();
-    await windowManager.destroy();
+Widget backwardButtons(Video video) {
+  if (Platform.isAndroid) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        OutlinedButton(
+            onPressed: () => {video.nFramesBackward(10)},
+            child: const Text('-10')),
+        OutlinedButton(
+            onPressed: () => {video.nFramesBackward(3)},
+            child: const Text('-3')),
+        OutlinedButton(
+            onPressed: () => {video.nFramesBackward(1)},
+            child: const Text('-1'))
+      ],
+    );
   }
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    children: [
+      OutlinedButton(
+          onPressed: () => {video.nFramesBackward(10)},
+          child: const Text('-10')),
+      OutlinedButton(
+          onPressed: () => {video.nFramesBackward(3)}, child: const Text('-3')),
+      OutlinedButton(
+          onPressed: () => {video.nFramesBackward(1)}, child: const Text('-1'))
+    ],
+  );
+}
+
+Widget forwardButtons(Video video) {
+  if (Platform.isAndroid) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      verticalDirection: VerticalDirection.up,
+      children: [
+        OutlinedButton(
+            onPressed: () => {video.nFramesForward(1)},
+            child: const Text('1+')),
+        OutlinedButton(
+            onPressed: () => {video.nFramesForward(3)},
+            child: const Text('3+')),
+        OutlinedButton(
+            onPressed: () => {video.nFramesForward(10)},
+            child: const Text('10+')),
+      ],
+    );
+  }
+  return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+    OutlinedButton(
+        onPressed: () => {video.nFramesForward(1)}, child: const Text('1+')),
+    OutlinedButton(
+        onPressed: () => {video.nFramesForward(3)}, child: const Text('3+')),
+    OutlinedButton(
+        onPressed: () => {video.nFramesForward(10)}, child: const Text('10+')),
+  ]);
 }
 
 class ToggleIntent extends Intent {}
